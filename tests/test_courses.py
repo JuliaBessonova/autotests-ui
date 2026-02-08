@@ -3,44 +3,21 @@ import pytest
 
 @pytest.mark.regression
 @pytest.mark.courses
-def test_empty_courses_list():
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=False)
-        context = browser.new_context()
-        page = context.new_page()
-        page.goto("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/auth/registration")
+def test_empty_courses_list(chromium_page_with_state: Page):
 
-        email_input = page.get_by_test_id('registration-form-email-input').locator('input')
-        email_input.fill('user.name@gmail.com')
+    chromium_page_with_state.goto("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/courses")
 
-        username_input = page.get_by_test_id('registration-form-username-input').locator('input')
-        username_input.fill('username')
+    page_title = chromium_page_with_state.get_by_test_id('courses-list-toolbar-title-text')
+    expect(page_title).to_be_visible()
+    expect(page_title).to_have_text('Courses')
 
-        password_input = page.get_by_test_id('registration-form-password-input').locator('input')
-        password_input.fill('password')
+    empty_page_icon = chromium_page_with_state.get_by_test_id('courses-list-empty-view-icon')
+    expect(empty_page_icon).to_be_visible()
 
-        registration_button = page.get_by_test_id('registration-page-registration-button')
-        registration_button.click()
+    empty_block_text = chromium_page_with_state.get_by_test_id('courses-list-empty-view-title-text')
+    expect(empty_block_text).to_be_visible()
+    expect(empty_block_text).to_have_text('There is no results')
 
-        context.storage_state(path='browser-state.json')
-
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=False)
-        context = browser.new_context(storage_state='browser-state.json')
-        page = context.new_page()
-        page.goto("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/courses")
-
-        page_title = page.get_by_test_id('courses-list-toolbar-title-text')
-        expect(page_title).to_be_visible()
-        expect(page_title).to_have_text('Courses')
-
-        empty_page_icon = page.get_by_test_id('courses-list-empty-view-icon')
-        expect(empty_page_icon).to_be_visible()
-
-        empty_block_text = page.get_by_test_id('courses-list-empty-view-title-text')
-        expect(empty_block_text).to_be_visible()
-        expect(empty_block_text).to_have_text('There is no results')
-
-        empty_block_description = page.get_by_test_id('courses-list-empty-view-description-text')
-        expect(empty_block_description).to_be_visible()
-        expect(empty_block_description).to_have_text('Results from the load test pipeline will be displayed here')
+    empty_block_description = chromium_page_with_state.get_by_test_id('courses-list-empty-view-description-text')
+    expect(empty_block_description).to_be_visible()
+    expect(empty_block_description).to_have_text('Results from the load test pipeline will be displayed here')
