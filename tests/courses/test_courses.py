@@ -1,12 +1,27 @@
 import pytest
+import allure
+from allure_commons.types import Severity
 
 from pages.courses.courses_list_page import CoursesListPage
 from pages.courses.create_course_page import CreateCoursePage
+from tools.allure.epics import AllureEpics
+from tools.allure.features import AllureFeatures
+from tools.allure.stories import AllureStories
+from tools.allure.tags import AllureTags
 
 
 @pytest.mark.regression
 @pytest.mark.courses
+@allure.tag(AllureTags.REGRESSION, AllureTags.COURSES)
+@allure.epic(AllureEpics.LMS)
+@allure.feature(AllureFeatures.COURSES)
+@allure.story(AllureStories.COURSES)
+@allure.parent_suite(AllureEpics.LMS)
+@allure.suite(AllureFeatures.COURSES)
+@allure.sub_suite(AllureStories.COURSES)
 class TestCourses:
+    @allure.title('Check empty courses page')
+    @allure.severity(Severity.NORMAL)
     def test_empty_courses_list(self, courses_list_page: CoursesListPage):
         courses_list_page.visit("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/courses")
         courses_list_page.sidebar.check_visible()
@@ -15,6 +30,8 @@ class TestCourses:
         courses_list_page.check_visible_empty_view()
 
 
+    @allure.title('Create new course')
+    @allure.severity(Severity.CRITICAL)
     def test_create_course(self, create_course_page: CreateCoursePage, courses_list_page: CoursesListPage):
         create_course_page.visit("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/courses/create")
         create_course_page.create_course_toolbar_view.check_visible()
@@ -34,6 +51,8 @@ class TestCourses:
                                                     min_score="10", max_score="100")
 
 
+    @allure.title('Edit course')
+    @allure.severity(Severity.CRITICAL)
     def test_edit_course(self, create_course_page: CreateCoursePage, courses_list_page: CoursesListPage):
         create_course_page.visit('https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/courses/create')
         create_course_page.image_upload_widget.upload_preview_image("./testdata/files/image.png")
